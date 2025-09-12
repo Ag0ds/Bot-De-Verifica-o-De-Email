@@ -9,6 +9,9 @@ from app.schemas import TranslateRequest, TranslateResponse, ProcessResponse
 from app.pipeline import translate_email, process_translated_text, process_raw_email
 from app.services.pdf_reader import extract_text_from_pdf
 from app.services.email_ingest import fetch_unread
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import HTTPException, Query
+from app.services.supabase_client import get_supabase
 
 load_dotenv()
 app = FastAPI(title="AutoU - Email AI Backend")
@@ -111,3 +114,41 @@ def api_ingest_and_save(limit: int = 5):
         items.append({"email_id": email_id, "subject": raw["subject"], "category": result.category, "importance": importance, "label": label})
 
     return {"saved": len(items), "items": items}
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/api/emails")
+def list_emails(
+    limit: int = Query(50, ge=1, le=200),
+    page: int = Query(1, ge=1),
+    importance: str | None = None,   
+    category: str | None = None,   
+    search: str | None = None,
+):
+    sb = get_supabase()
+    q = sb.table("emails").select("*").order("received_at", desc=True)
+    if importance: q = q.eq("importance_label", importance)
+    if category:   q = q.eq("category", category)
+    if search:     q = q.ilike("subject", f"%{search}%")
+
+    start = (page - 1) * limit
+    end = start + limit - 1
+    q = q.range(start, end)
+
+    res = q.execute()
+    return {"items": res.data or [], "page": page, "limit": limit}
+
+@app.get("/api/emails/{email_id}")
+def get_email(email_id: str):
+    sb = get_supabase()
+    meta = sb.table("emails").select("*").eq("id", email_id).limit(1).execute().data
+    if not meta:
+        raise HTTPException(404, "email não encontrado")
+    content = sb.table("email_contents").select("*").eq("email_id", email_id).limit(1).execute().data
+    return {"meta": meta[0], "content": (content[0] if content else None)}

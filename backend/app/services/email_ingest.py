@@ -44,17 +44,37 @@ def fetch_unread(limit: int = 10) -> Generator[Dict[str, Any], None, None]:
                 pass
 
             yield {
+                "uid": getattr(msg, "uid", None),
                 "message_uid": str(msg.uid) if getattr(msg, "uid", None) is not None else (msg.message_id or ""),
                 "subject": msg.subject or "",
                 "text": msg.text or "",
                 "html": msg.html or "",
                 "attachments": atts,          # [{filename, content(bytes), content_type, size}]
-
-                # novos metadados
                 "from_addr": from_addr,
                 "from_name": from_name,
                 "from_email": from_email or from_addr,
                 "to_emails": to_emails,
                 "cc_emails": cc_emails,
-                "received_at": msg.date,      # datetime
+                "received_at": getattr(msg, "date", None),     
             }
+
+def _login_mailbox():
+    host = os.getenv("IMAP_HOST", "imap.gmail.com")
+    user = os.getenv("IMAP_USER"); pwd = os.getenv("IMAP_PASS")
+    folder = os.getenv("IMAP_FOLDER", "INBOX")
+    if not (host and user and pwd):
+        raise RuntimeError("IMAP env faltando")
+    mb = MailBox(host).login(user, pwd, folder)
+    return mb
+
+def mark_seen(uids: list[str]) -> int:
+    if not uids: return 0
+    with _login_mailbox() as m:
+        m.flag(uids, ['\\Seen'], True)
+    return len(uids)
+
+def move_to(uids: list[str], dest_folder: str) -> int:
+    if not uids: return 0
+    with _login_mailbox() as m:
+        m.move(uids, dest_folder)
+    return len(uids)
