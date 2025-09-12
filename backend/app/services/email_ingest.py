@@ -21,9 +21,40 @@ def fetch_unread(limit: int = 10) -> Generator[Dict[str, Any], None, None]:
                     "content_type": (att.content_type or ""),
                     "size": (att.size or 0),
                 })
+            from_addr = (msg.from_ or "")
+            from_name = ""
+            from_email = ""
+            try:
+                if msg.from_values:  # list[Address]
+                    from_name = msg.from_values[0].name or ""
+                    from_email = msg.from_values[0].email or ""
+            except Exception:
+                pass
+
+            to_emails = []
+            try:
+                to_emails = [a.email for a in (msg.to_values or []) if getattr(a, "email", None)]
+            except Exception:
+                pass
+
+            cc_emails = []
+            try:
+                cc_emails = [a.email for a in (msg.cc_values or []) if getattr(a, "email", None)]
+            except Exception:
+                pass
+
             yield {
+                "message_uid": str(msg.uid) if getattr(msg, "uid", None) is not None else (msg.message_id or ""),
                 "subject": msg.subject or "",
                 "text": msg.text or "",
                 "html": msg.html or "",
-                "attachments": atts,
+                "attachments": atts,          # [{filename, content(bytes), content_type, size}]
+
+                # novos metadados
+                "from_addr": from_addr,
+                "from_name": from_name,
+                "from_email": from_email or from_addr,
+                "to_emails": to_emails,
+                "cc_emails": cc_emails,
+                "received_at": msg.date,      # datetime
             }
