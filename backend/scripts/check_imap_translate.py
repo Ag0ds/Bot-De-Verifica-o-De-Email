@@ -18,7 +18,6 @@ def main():
         print("Tem texto de PDF?:", res["has_pdf_text"])
         print("Tamanho (chars):", res["length"])
         print("\n--- TEXTO LIMPO ---\n")
-        # Mostra apenas os primeiros 1200 chars para não poluir
         txt = res["text"][:1200]
         print(txt)
         if len(res["text"]) > 1200:

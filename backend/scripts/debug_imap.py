@@ -1,4 +1,3 @@
-# scripts/debug_imap.py
 import os
 from dotenv import load_dotenv
 from imap_tools import MailBox
