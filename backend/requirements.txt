@@ -8,6 +8,11 @@ scikit-learn==1.5.2
 supabase==2.6.0
 psycopg2==2.9.10
 
+groq==0.12.0
+redis==5.0.7
+email-validator==2.2.0
+
+
 
 # NLP / parsing
 scikit-learn==1.5.2

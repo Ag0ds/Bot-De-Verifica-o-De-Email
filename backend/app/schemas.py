@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional
 
 class TranslateRequest(BaseModel):
@@ -23,3 +23,29 @@ class ProcessResponse(BaseModel):
     subject: str
     text: str
     result: ProcessResult
+
+class GroqSuggestRequest(BaseModel):
+    email_id: Optional[str] = None
+    subject: Optional[str] = None
+    text: Optional[str] = None
+
+class GroqSuggestResponse(BaseModel):
+    draft_reply: str
+    category: str
+    confidence: float
+
+class SendIntentRequest(BaseModel):
+    email_id: str
+    to_email: EmailStr
+    draft: str
+
+class SendIntentResponse(BaseModel):
+    request_id: str
+    masked_to: str
+
+class SendConfirmRequest(BaseModel):
+    request_id: str
+    otp: str
+
+class SendConfirmResponse(BaseModel):
+    queued: bool = True
