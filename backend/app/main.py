@@ -202,13 +202,22 @@ def list_emails(
 @app.get("/api/emails/{email_id}")
 def get_email(email_id: str):
     from app.services.supabase_client import get_supabase
-
     sb = get_supabase()
+
     meta = sb.table("emails").select("*").eq("id", email_id).limit(1).execute().data
+    meta = meta[0] if meta else None
     if not meta:
-        raise HTTPException(404, "email não encontrado")
-    content = sb.table("email_contents").select("*").eq("email_id", email_id).limit(1).execute().data
-    return {"meta": meta[0], "content": (content[0] if content else None)}
+        meta2 = sb.table("emails").select("*").eq("message_uid", email_id).limit(1).execute().data
+        meta = meta2[0] if meta2 else None
+
+    if not meta:
+        raise HTTPException(404, f"email não encontrado: {email_id}")
+
+    real_id = meta["id"]
+    content = sb.table("email_contents").select("*").eq("email_id", real_id).limit(1).execute().data
+    return {"meta": meta, "content": (content[0] if content else None)}
+
+
 
 # ---------- Groq: sugestão de resposta ----------
 @app.post("/api/groq/suggest", response_model=GroqSuggestResponse)
@@ -263,7 +272,6 @@ def api_send_intent(payload: SendIntentRequest, request: Request):
     if not ok_em:
         raise HTTPException(429, f"quota de destino: {why_em}")
 
-    # email existe?
     meta = sb.table("emails").select("id,subject").eq("id", payload.email_id).limit(1).execute().data
     if not meta:
         raise HTTPException(404, "email_id não encontrado")
