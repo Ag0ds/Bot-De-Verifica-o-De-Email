@@ -21,10 +21,12 @@ load_dotenv()
 
 app = FastAPI(title="AutoU - Email AI Backend")
 
-# CORS (deixe restrito em produção)
+
+origins = ["https://seu-projeto.vercel.app"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -119,7 +121,6 @@ def api_ingest_and_save(limit: int = 5):
     from app.services.store_email import save_email_pack
 
     items = []
-    # também lazy aqui para evitar custo no import do módulo
     from app.services.email_ingest import fetch_unread
 
     for raw in fetch_unread(limit=limit):
