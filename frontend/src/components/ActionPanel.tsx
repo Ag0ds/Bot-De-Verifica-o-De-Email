@@ -29,8 +29,12 @@ export default function ActionPanel(props: { emailId: string; defaultToEmail?: s
       if (!res.ok) throw new Error(await res.text());
       const data: GroqSuggestResponse = await res.json();
       setDraft(data.draft_reply || "");
-    } catch (e: any) {
-      setError(e?.message || "Erro ao sugerir resposta");
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e.message);
+      } else {
+        setError("Erro ao sugerir resposta");
+      }
     } finally {
       setLoading(null);
     }
@@ -48,14 +52,18 @@ export default function ActionPanel(props: { emailId: string; defaultToEmail?: s
       const data: SendIntentResponse = await res.json();
       setRequestId(data.request_id);
       setMaskedTo(data.masked_to);
-    } catch (e: any) {
-      setError(e?.message || "Erro ao solicitar envio");
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e.message);
+      } else {
+        setError("Erro ao solicitar envio");
+      }
     } finally {
       setLoading(null);
     }
   }
 
-  async function doSendConfirm() {
+   async function doSendConfirm() {
     setLoading("confirm"); setError(null);
     try {
       const res = await fetch(`${API_BASE}/api/send-confirm`, {
@@ -65,10 +73,14 @@ export default function ActionPanel(props: { emailId: string; defaultToEmail?: s
       });
       if (!res.ok) throw new Error(await res.text());
       const data: SendConfirmResponse = await res.json();
-      alert(data.queued ? "Envio enfileirado/enviado ✅" : "Falha inesperada");
-      setRequestId(null); setOtp(""); // reset estado
-    } catch (e: any) {
-      setError(e?.message || "Erro ao confirmar envio");
+      alert(data.queued ? "Envio enfileirado/enviado" : "Falha inesperada");
+      setRequestId(null); setOtp("");
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e.message);
+      } else {
+        setError("Erro ao confirmar envio");
+      }
     } finally {
       setLoading(null);
     }
