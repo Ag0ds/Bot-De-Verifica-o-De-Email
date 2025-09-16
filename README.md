@@ -294,4 +294,4 @@ export const revalidate = 0;
 ```
 ---
 ## Licença
-[MIT](./LICENSE)
+[MIT][(./LICENSE)](https://github.com/Ag0ds/Bot-De-Verifica-o-De-Email/blame/main/LICENSE)
