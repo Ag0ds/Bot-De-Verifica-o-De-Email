@@ -1,84 +1,229 @@
-import Link from "next/link";
-import { API_BASE } from "@/lib/api";
+import Link from "next/link"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Mail, Brain, Sparkles, RefreshCw } from "lucide-react"
+
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE ?? "http://127.0.0.1:8000").replace(/\/$/, "");
 
 type EmailItem = {
-  id?: string;
-  email_id?: string;
-  message_uid?: string;
-  subject: string;
-  category?: string;
-  importance_label?: string;
-  summary?: string;
-  received_at?: string;
-};
+  id?: string
+  email_id?: string
+  message_uid?: string
+  subject: string
+  category?: string
+  importance_label?: string
+  summary?: string
+  received_at?: string
+}
 
-type ListResp = { items: EmailItem[]; page: number; limit: number };
+type ListResp = { items: EmailItem[]; page: number; limit: number }
 
 function resolveOpenId(m: EmailItem): string {
-  return m.id ?? m.message_uid ?? m.email_id ?? "";
+  return m.id ?? m.message_uid ?? m.email_id ?? ""
+}
+
+function getCategoryColor(category?: string) {
+  if (!category) return "bg-muted text-muted-foreground"
+
+  switch (category.toLowerCase()) {
+    case "produtivo":
+    case "productive":
+      return "bg-green-500/20 text-green-400 border-green-500/30"
+    case "improdutivo":
+    case "unproductive":
+      return "bg-red-500/20 text-red-400 border-red-500/30"
+    default:
+      return "bg-primary/20 text-primary border-primary/30"
+  }
+}
+
+function getImportanceColor(importance?: string) {
+  if (!importance) return "bg-muted text-muted-foreground"
+
+  switch (importance.toLowerCase()) {
+    case "alta":
+    case "high":
+      return "bg-orange-500/20 text-orange-400 border-orange-500/30"
+    case "média":
+    case "medium":
+      return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+    case "baixa":
+    case "low":
+      return "bg-blue-500/20 text-blue-400 border-blue-500/30"
+    default:
+      return "bg-accent/20 text-accent-foreground border-accent/30"
+  }
 }
 
 export default async function Page() {
-  const res = await fetch(`${API_BASE}/api/emails?limit=50`, { cache: "no-store" });
-  if (!res.ok) {
-    return (
-      <main>
-        <h2 style={{ fontSize: 18, marginBottom: 8 }}>Inbox</h2>
-        <p>Falha ao carregar a lista.</p>
-      </main>
-    );
+  let data: ListResp | null = null;
+  let error = false;
+
+  try {
+    const url = `${API_BASE}/api/emails?limit=50`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (res.ok) {
+      data = await res.json();
+    } else {
+      console.error("GET", url, "->", res.status, await res.text());
+      error = true;
+    }
+  } catch (e) {
+    console.error(e);
+    error = true;
   }
 
-  const data: ListResp = await res.json();
-  const items: EmailItem[] = Array.isArray(data?.items) ? data.items : [];
+  const items: EmailItem[] = Array.isArray(data?.items) ? data.items : []
 
   return (
-    <main>
-      <h2 style={{ fontSize: 18, marginBottom: 8 }}>Inbox</h2>
+    <div className="min-h-screen bg-background">
+      <header className="neon-line border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/20 border border-primary/30">
+                <Brain className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-foreground">AI Email Analyzer</h1>
+                <p className="text-sm text-muted-foreground">Análise inteligente de emails</p>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/" className="flex items-center gap-2">
+                <RefreshCw className="h-4 w-4" />
+                Atualizar
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </header>
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-        <Link href="/" style={{ textDecoration: "underline" }}>Atualizar</Link>
-      </div>
-
-      {items.length === 0 && <p>Nenhum e-mail encontrado.</p>}
-
-      <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 10 }}>
-        {items.map((m: EmailItem) => {
-          const openId = resolveOpenId(m);
-          return (
-            <li key={openId || m.subject} style={{ border: "1px solid #ddd", padding: 12, borderRadius: 8 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-                <strong>{m.subject || "(sem assunto)"}</strong>
-                <div style={{ display: "flex", gap: 6 }}>
-                  {m.category && (
-                    <span style={{ fontSize: 12, padding: "2px 6px", border: "1px solid #ccc", borderRadius: 999 }}>
-                      {m.category}
-                    </span>
-                  )}
-                  {m.importance_label && (
-                    <span style={{ fontSize: 12, padding: "2px 6px", border: "1px solid #ccc", borderRadius: 999 }}>
-                      {m.importance_label}
-                    </span>
-                  )}
+      <main className="container mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="bg-card border-border">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <Mail className="h-8 w-8 text-primary" />
+                <div>
+                  <p className="text-2xl font-bold text-foreground">{items.length}</p>
+                  <p className="text-sm text-muted-foreground">Total de Emails</p>
                 </div>
               </div>
+            </CardContent>
+          </Card>
 
-              {m.summary && <p style={{ marginTop: 8, color: "#444" }}>{m.summary}</p>}
-
-              <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 8 }}>
-                {openId ? (
-                  <Link href={`/email/${encodeURIComponent(openId)}`}>Abrir</Link>
-                ) : (
-                  <span style={{ color: "#999" }}>Sem ID para abrir</span>
-                )}
-                <small style={{ color: "#666" }}>
-                  id: {m.id ?? "—"} | uid: {m.message_uid ?? "—"}
-                </small>
+          <Card className="bg-card border-border">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <Sparkles className="h-8 w-8 text-green-400" />
+                <div>
+                  <p className="text-2xl font-bold text-foreground">
+                    {items.filter((item) => item.category?.toLowerCase().includes("produtiv")).length}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Produtivos</p>
+                </div>
               </div>
-            </li>
-          );
-        })}
-      </ul>
-    </main>
-  );
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card border-border">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-8 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <div className="h-4 w-4 rounded-full bg-red-400"></div>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-foreground">
+                    {items.filter((item) => item.category?.toLowerCase().includes("improdutiv")).length}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Improdutivos</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {error && (
+          <Card className="bg-red-950/50 border-red-800/50">
+            <CardContent className="p-6">
+              <p className="text-red-200 font-medium">Falha ao carregar a lista de emails.</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {!error && items.length === 0 && (
+          <Card className="bg-card border-border">
+            <CardContent className="p-12 text-center">
+              <Mail className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-lg text-muted-foreground">Nenhum email encontrado.</p>
+              <p className="text-sm text-muted-foreground mt-2">Conecte sua conta de email para começar a análise.</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {items.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-foreground mb-4">Emails Analisados</h2>
+            {items.map((email: EmailItem) => {
+              const openId = resolveOpenId(email)
+              return (
+                <Card
+                  key={openId || email.subject}
+                  className="bg-card border-border hover:bg-card/80 transition-colors"
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <h3 className="font-semibold text-foreground text-balance leading-tight truncate max-w-[70%]">
+                        {email.subject || "(sem assunto)"}
+                      </h3>
+                      <div className="flex gap-2 flex-shrink-0">
+                        {email.category && (
+                          <Badge variant="outline" className={getCategoryColor(email.category)}>
+                            {email.category}
+                          </Badge>
+                        )}
+                        {email.importance_label && (
+                          <Badge variant="outline" className={getImportanceColor(email.importance_label)}>
+                            {email.importance_label}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="pt-0">
+                    {email.summary && (
+                      <p className="text-muted-foreground text-sm mb-4 text-pretty leading-relaxed line-clamp-3">
+                        {email.summary}
+                      </p>
+                    )}
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        {openId ? (
+                          <Button variant="default" size="sm" asChild>
+                            <Link href={`/email/${encodeURIComponent(openId)}`}>Abrir Email</Link>
+                          </Button>
+                        ) : (
+                          <Button variant="outline" size="sm" disabled>
+                            Sem ID disponível
+                          </Button>
+                        )}
+                      </div>
+
+                      <div className="text-xs text-muted-foreground font-mono truncate max-w-[40%]">
+                        ID: {email.id ?? "—"} | UID: {email.message_uid ?? "—"}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        )}
+      </main>
+    </div>
+  )
 }
