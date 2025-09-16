@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Mail, Brain, Sparkles, RefreshCw } from "lucide-react"
+import RefreshButton from "@/components/RefreshButton";
+
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE ?? "http://127.0.0.1:8000").replace(/\/$/, "");
 
@@ -56,6 +58,9 @@ function getImportanceColor(importance?: string) {
   }
 }
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function Page() {
   let data: ListResp | null = null;
   let error = false;
@@ -91,10 +96,7 @@ export default async function Page() {
               </div>
             </div>
             <Button variant="outline" size="sm" asChild>
-              <Link href="/" className="flex items-center gap-2">
-                <RefreshCw className="h-4 w-4" />
-                Atualizar
-              </Link>
+              <RefreshButton runIngest />
             </Button>
           </div>
         </div>
