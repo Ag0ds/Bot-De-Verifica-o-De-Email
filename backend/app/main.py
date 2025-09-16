@@ -22,8 +22,9 @@ load_dotenv()
 app = FastAPI(title="AutoU - Email AI Backend")
 
 
-origins = ["https://seu-projeto.vercel.app"]
 
+
+origins = [o.strip() for o in os.getenv("FRONTEND_ORIGINS","http://localhost:3000").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
