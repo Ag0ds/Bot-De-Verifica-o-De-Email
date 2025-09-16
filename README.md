@@ -1,6 +1,47 @@
-# Bot de Verificação de Email
-> **Case Prático – AutoU**
-> Classificação automática de emails (Produtivo/Improdutivo), resumo, sugestão de resposta com
+<div id="top" class=""></div>
+
+<div align="center" class="text-center">
+  <h1>BOT DE VERIFICAÇÃO DE EMAIL</h1>
+  <p><em>Leitura, classificação e resposta inteligente com segurança (OTP)</em></p>
+
+  <!-- Badges do repositório -->
+  <img alt="último-commit" src="https://img.shields.io/github/last-commit/Ag0ds/Bot-De-Verifica-o-De-Email?style=flat&logo=git&logoColor=white&color=0080ff" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="linguagem-principal" src="https://img.shields.io/github/languages/top/Ag0ds/Bot-De-Verifica-o-De-Email?style=flat&color=0080ff" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="quantidade-linguagens" src="https://img.shields.io/github/languages/count/Ag0ds/Bot-De-Verifica-o-De-Email?style=flat&color=0080ff" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="licença" src="https://img.shields.io/badge/License-MIT-0080ff.svg" class="inline-block mx-1" style="margin:0 2px;">
+
+  <p><em>Construído com as ferramentas e tecnologias:</em></p>
+
+  <!-- Backend / NLP / Infra -->
+  <img alt="FastAPI"        src="https://img.shields.io/badge/FastAPI-009688.svg?style=flat&logo=fastapi&logoColor=white" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="Python"         src="https://img.shields.io/badge/Python-3776AB.svg?style=flat&logo=python&logoColor=white" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="Uvicorn"        src="https://img.shields.io/badge/Uvicorn-000000.svg?style=flat" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="scikit-learn"   src="https://img.shields.io/badge/scikit--learn-F7931E.svg?style=flat&logo=scikitlearn&logoColor=white" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="NLTK"           src="https://img.shields.io/badge/NLTK-154570.svg?style=flat" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="pdfminer.six"   src="https://img.shields.io/badge/pdfminer.six-333333.svg?style=flat" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="imap-tools"     src="https://img.shields.io/badge/imap--tools-333333.svg?style=flat" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="SMTP"           src="https://img.shields.io/badge/SMTP-7A7A7A.svg?style=flat" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="Supabase"       src="https://img.shields.io/badge/Supabase-3ECF8E.svg?style=flat&logo=supabase&logoColor=white" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="PostgreSQL"     src="https://img.shields.io/badge/PostgreSQL-4169E1.svg?style=flat&logo=postgresql&logoColor=white" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="Groq"           src="https://img.shields.io/badge/Groq-FF4A4A.svg?style=flat" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="Docker"         src="https://img.shields.io/badge/Docker-2496ED.svg?style=flat&logo=Docker&logoColor=white" class="inline-block mx-1" style="margin:0 2px;">
+
+  <!-- Frontend -->
+  <br>
+  <img alt="Next.js"        src="https://img.shields.io/badge/Next.js-000000.svg?style=flat&logo=next.js&logoColor=white" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="React"          src="https://img.shields.io/badge/React-61DAFB.svg?style=flat&logo=React&logoColor=black" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="TypeScript"     src="https://img.shields.io/badge/TypeScript-3178C6.svg?style=flat&logo=TypeScript&logoColor=white" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="Tailwind CSS"   src="https://img.shields.io/badge/Tailwind_CSS-06B6D4.svg?style=flat&logo=tailwindcss&logoColor=white" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="shadcn/ui"      src="https://img.shields.io/badge/shadcn%2Fui-111827.svg?style=flat" class="inline-block mx-1" style="margin:0 2px;">
+
+  <!-- Deploy -->
+  <br>
+  <img alt="Vercel"         src="https://img.shields.io/badge/Vercel-000000.svg?style=flat&logo=vercel&logoColor=white" class="inline-block mx-1" style="margin:0 2px;">
+  <img alt="Render"         src="https://img.shields.io/badge/Render-46E3B7.svg?style=flat&logo=render&logoColor=black" class="inline-block mx-1" style="margin:0 2px;">
+</div>
+
+**Case Prático – AutoU**
+Classificação automática de emails (Produtivo/Improdutivo), resumo, sugestão de resposta com
 LLM, priorização por importância e fluxo seguro de envio com OTP.
 ---
 ## Sumário
